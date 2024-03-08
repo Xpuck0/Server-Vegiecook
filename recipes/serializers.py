@@ -26,9 +26,17 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
+    diet = DietSerializer(read_only=True)
+    categories = CategorySerializer(many=True, read_only=True)
+    # diet_id = serializers.PrimaryKeyRelatedField(
+    #     queryset=Diet.objects.all(),
+    #     write_only=True,
+    #     source='diet'
+    # )
+
     class Meta:
         model = Recipe
-        fields = ['id', 'title', 'image', 'courses']
+        fields = ['id', 'title', 'image', 'diet', 'categories', 'rating', 'votes']
 
 class RecipeSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)

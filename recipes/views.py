@@ -111,12 +111,47 @@ class RecipeCreateView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# class RecipeListView(APIView):
+#     def get(self, request):
+#         recipes = Recipe.objects.all().prefetch_related('image_set', 'categories')
+#         serializer = RecipeListSerializer(recipes, many=True)
+#         return Response(serializer.data)
+
 class RecipeListView(APIView):
     def get(self, request):
-        recipes = Recipe.objects.all().prefetch_related('image_set', 'categories')
+        # Existing diet filtering
+        diet_id = request.query_params.get('diet')
+        recipes = Recipe.objects.all()
+        if diet_id is not None:
+            recipes = recipes.filter(diet_id=diet_id)
+        
+        # Category filtering
+        category_ids = request.query_params.get('categories')
+        if category_ids:
+            category_ids = category_ids.split(',')
+            recipes = recipes.filter(categories__id__in=category_ids).distinct()
+        
+        recipes = recipes.prefetch_related('image_set', 'categories')
+        
         serializer = RecipeListSerializer(recipes, many=True)
         return Response(serializer.data)
 
+
+class SortedRecipesView(APIView):
+    """
+    A view that returns recipes sorted by their rating.
+    """
+
+    def get(self, request):
+        # Fetch recipes and order them by the 'rating' field in descending order.
+        # Adjust '-rating' if your model uses a different field or mechanism for ratings.
+        recipes = Recipe.objects.all().order_by('-rating').prefetch_related('image_set', 'categories')
+
+        # Serialize the query set.
+        serializer = RecipeListSerializer(recipes, many=True)
+
+        # Return the serialized data.
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class RecipeDetailView(APIView):
     def get_object(self, pk):

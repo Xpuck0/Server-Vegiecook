@@ -29,7 +29,7 @@ class Recipe(models.Model):
     ingredients = models.JSONField(default=dict)
     instructions = models.JSONField(default=list)
 
-    rating = models.DecimalField(max_digits=2, decimal_places=1, blank=True, null=True, validators=[MinValueValidator(0, 'Rating must be at least 0'), MaxValueValidator(5, 'Rating must not exceed 5')])
+    rating = models.DecimalField(max_digits=2, decimal_places=1, blank=True, null=False, default=0, validators=[MinValueValidator(0, 'Rating must be at least 0'), MaxValueValidator(5, 'Rating must not exceed 5')])
     votes = models.PositiveIntegerField(blank=True, null=True, default=0)
 
     description = models.TextField()
