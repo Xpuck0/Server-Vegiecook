@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'replies',
     'courses',
     'categories',
+    'forum',
 ]
 
 MIDDLEWARE = [

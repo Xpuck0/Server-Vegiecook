@@ -29,6 +29,7 @@ urlpatterns = [
     path('replies/', include('replies.urls')),
     path('courses/', include('courses.urls')),
     path('categories/', include('categories.urls')),
+    path('forum/', include('forum.urls')),
 ]
 
 
