@@ -71,14 +71,17 @@ class RecipeCreateView(APIView):
         except ValueError:
             return Response({"error": "Invalid diet ID"}, status=status.HTTP_400_BAD_REQUEST)
 
+        prep_time = request.data.get('prep_time')
+        cook_time = request.data.get('cook_time')
+
         #Convert request time to duration field
         def convert_minutes_to_duration(minutes):
             hours, minutes = divmod(int(minutes), 60)
             return f"{hours:02d}:{minutes:02d}:00"
 
         # Example conversion
-        prep_time_formatted = convert_minutes_to_duration('182')
-        cook_time_formatted = convert_minutes_to_duration('65')
+        prep_time_formatted = convert_minutes_to_duration(prep_time)
+        cook_time_formatted = convert_minutes_to_duration(cook_time)
 
         # Parse ingredients and instructions from JSON-encoded strings
         ingredients = json.loads(request.data.get('ingredients'))  # Assuming ingredients is a JSON-encoded string representing an object
@@ -111,11 +114,20 @@ class RecipeCreateView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# class RecipeListView(APIView):
-#     def get(self, request):
-#         recipes = Recipe.objects.all().prefetch_related('image_set', 'categories')
-#         serializer = RecipeListSerializer(recipes, many=True)
-#         return Response(serializer.data)
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Recipe
+from .serializers import RecipeListSerializer
+
+class UserRecipesView(APIView):
+
+    def get(self, request, user_id):
+        recipes = Recipe.objects.filter(user_id=user_id).prefetch_related('image_set', 'categories')
+        serializer = RecipeListSerializer(recipes, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class RecipeListView(APIView):
     def get(self, request):

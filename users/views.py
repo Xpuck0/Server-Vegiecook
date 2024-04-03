@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework.views import APIView
 from rest_framework.exceptions import AuthenticationFailed
 from .serializers import UserSerializer
@@ -81,3 +81,9 @@ class LogoutView(APIView):
             'message': 'success'
         }
         return response
+
+class GetUserByIdView(APIView):
+    def get(self, request, id):
+        user = get_object_or_404(User, id=id)  # Get the user object or return a 404 if not found
+        serializer = UserSerializer(user)  # Serialize the user object
+        return Response(serializer.data)  # Return the serialized user data

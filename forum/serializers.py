@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ForumQuestion, ForumAnswer
+from .models import ForumQuestion, ForumAnswer, Like
 from users.serializers import UserSerializer
 from django.conf import settings
 from django.db import models
@@ -30,3 +30,8 @@ class ForumQuestionSerializer(serializers.ModelSerializer):
 
     def get_likes_count(self, obj):
         return obj.likes.count()
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = '__all__'
