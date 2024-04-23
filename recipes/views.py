@@ -143,11 +143,15 @@ class RecipeListView(APIView):
             category_ids = category_ids.split(',')
             recipes = recipes.filter(categories__id__in=category_ids).distinct()
         
+        # Order by created_at in descending order (latest first)
+        recipes = recipes.order_by('-created_at')
+        
+        # Prefetch related fields
         recipes = recipes.prefetch_related('image_set', 'categories')
         
+        # Serialize and return the response
         serializer = RecipeListSerializer(recipes, many=True)
         return Response(serializer.data)
-
 
 class SortedRecipesView(APIView):
     """
